@@ -1,0 +1,666 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="DialtactsActivity1、点击telephone APP ，通过抓log可以清楚的看到程序入口是DialtactsActivity.onClick()方法:1234567891011121314151617181920212223242526272829303132333435public void onClick(View view) &amp;#123;        switch (vi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android6.0 Telephone 源码分析（一）">
+<meta property="og:url" content="http://yoursite.com/2016/07/22/Android6-0-source-code-first-anlysis/index.html">
+<meta property="og:site_name" content="luoluolet">
+<meta property="og:description" content="DialtactsActivity1、点击telephone APP ，通过抓log可以清楚的看到程序入口是DialtactsActivity.onClick()方法:1234567891011121314151617181920212223242526272829303132333435public void onClick(View view) &amp;#123;        switch (vi">
+<meta property="og:image" content="https://raw.githubusercontent.com/XianboChen/MyBlog/master/picture/2.png">
+<meta property="og:updated_time" content="2016-08-31T07:05:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android6.0 Telephone 源码分析（一）">
+<meta name="twitter:description" content="DialtactsActivity1、点击telephone APP ，通过抓log可以清楚的看到程序入口是DialtactsActivity.onClick()方法:1234567891011121314151617181920212223242526272829303132333435public void onClick(View view) &amp;#123;        switch (vi">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/XianboChen/MyBlog/master/picture/2.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/07/22/Android6-0-source-code-first-anlysis/"/>
+
+  <title> Android6.0 Telephone 源码分析（一） | luoluolet </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">luoluolet</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android6.0 Telephone 源码分析（一）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-22T23:32:04+08:00" content="2016-07-22">
+              2016-07-22
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/22/Android6-0-source-code-first-anlysis/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/Android6-0-source-code-first-anlysis/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="DialtactsActivity"><a href="#DialtactsActivity" class="headerlink" title="DialtactsActivity"></a>DialtactsActivity</h3><p>1、点击telephone APP ，通过抓log可以清楚的看到程序入口是DialtactsActivity.onClick()方法:<br><img src="https://raw.githubusercontent.com/XianboChen/MyBlog/master/picture/2.png" alt="2"><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View view)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">switch</span> (view.getId()) &#123;<span class="comment">//对触发的buttonID进行判断</span></div><div class="line">            <span class="keyword">case</span> R.id.floating_action_button:<span class="comment">//点击的是“拨号”按钮</span></div><div class="line">                 <span class="keyword">if</span>(mListsFragment.getCurrentTabIndex()==ListsFragment.TAB_INDEX_ALL_CONTACTS&amp;&amp;!mInRegularSearch) &#123;       <span class="comment">//通过电话簿拨号</span></div><div class="line">                  DialerUtils.startActivityWithErrorToast(<span class="keyword">this</span>,IntentUtil.getNewContactIntent(), R.string.add_contact_not_available);</div><div class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span> (!mIsDialpadShown) &#123;<span class="comment">//拨号界面未显示，显示拨号界面</span></div><div class="line">                    mInCallDialpadUp = <span class="keyword">false</span>;</div><div class="line">                    showDialpadFragment(<span class="keyword">true</span>);<span class="comment">//在该方法中newl了DialpadFragment，实际上也就是交给了DialPadFragment去处理</span></div><div class="line">                &#125;</div><div class="line">        <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">case</span> R.id.voice_search_button:<span class="comment">//点击的是“声控搜索”按钮</span></div><div class="line"></div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">                    ...  <span class="comment">//略</span></div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">case</span> R.id.dialtacts_options_menu_button:<span class="comment">//设置按钮</span></div><div class="line"></div><div class="line">              ....<span class="comment">//略</span></div><div class="line"></div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">default</span>: &#123;</div><div class="line"></div><div class="line">              ....<span class="comment">//略</span></div><div class="line"></div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">       &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<h3 id="DialPadFragment"><a href="#DialPadFragment" class="headerlink" title="DialPadFragment"></a>DialPadFragment</h3><p>2、调用showDialpadFragment()方法，在该方法中new出了DialPadFragment,此时进入类DialPadFragment中的onClick()方法（这里有两个DialPadFragment.java文件，一个在./dialpad文件夹中，还有一个在./incall文件夹中，这是在来电时调用的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onKey</span><span class="params">(View view, <span class="keyword">int</span> keyCode, KeyEvent event)</span> </span>&#123;</div><div class="line">       <span class="keyword">switch</span> (view.getId()) &#123;</div><div class="line">          <span class="keyword">case</span> R.id.digits:</div><div class="line">               <span class="keyword">if</span> (keyCode == KeyEvent.KEYCODE_ENTER) &#123;<span class="comment">//如果是KEYCODE_ENTER，开始拨打</span></div><div class="line">                   handleDialButtonPressed();</div><div class="line">                   <span class="keyword">return</span> <span class="keyword">true</span>;<span class="comment">//自己处理了</span></div><div class="line">               &#125;</div><div class="line">           <span class="keyword">break</span>;</div><div class="line">       &#125;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">false</span>;<span class="comment">//返回false由系统进行处理</span></div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>如果点击的是enter建，将会用handleDialButtonPressed()方法:</p>
+<blockquote>
+<p> /*<br>In most cases, when the dial button is pressed, there is a<br>number in digits area. Pack it in the intent, start the<br>outgoing call broadcast as a separate task and finish this activity.<br> When there is no digit and the phone is CDMA and off hook,<br>resending a blank flash for CDMA. CDMA networks use Flash<br>messages when special processing needs to be done, mainly for<br> 3-way or call waiting scenarios. Presumably, here we&#39;re in a<br>special 3-way scenario where the network needs a blank flash<br>before being able to add the new participant.  (This is not the<br>case with all 3-way calls, just certain CDMA infrastructures.)</p>
+<p>Otherwise, there is no digit, display the last dialed number. Don&#39;t finish since the user may want to edit it. The<br>user needs to press the dial button again, to dial it (general<br> case described above).</p>
+<p>*/</p>
+</blockquote>
+<p>*在大多数情况下，当拨号按钮被按下时都会有一串数字存在。从它的intent对象中得到它，开始</p>
+<p>*呼叫广播作为一个单独的任务，并结束这个任务活动。</p>
+<p>*如果没有数字并且CDMA网络处于占线状态时，</p>
+<p>*我们发送一个空白的Flash CDMA。CDMA网络使用Flash</p>
+<p>*来处理特殊处理的消息时，这里主要有三种方式</p>
+<p>*以及呼叫等待的情景。这里我们应该属于</p>
+<p>*前者，在能够添加新参与者之前,网络需要一个空白的Flash。</p>
+<p>*若不是上面的情景，也不要结束这个Activity，应该显示上一次的电话号码</p>
+<p>*并等待用户可能要编辑它。</p>
+<p>*用户需要再次按拨号键，重新拨通（重复上面描述的案例）。</p>
+<p> */</p>
+<p>———–  部分翻译可能不够准确  ————</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleDialButtonPressed</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (isDigitsEmpty()) &#123; <span class="comment">//如果没有数字输入</span></div><div class="line"></div><div class="line">            handleDialButtonClickWithEmptyDigits();</div><div class="line"></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line"></div><div class="line">           <span class="keyword">final</span> String number = mDigits.getText().toString();                        <span class="comment">//获取输入的电话号码</span></div><div class="line"></div><div class="line">            <span class="keyword">if</span> (number != <span class="keyword">null</span></div><div class="line">                    &amp;&amp; !TextUtils.isEmpty(mProhibitedPhoneNumberRegexp)</div><div class="line">                    &amp;&amp; number.matches(mProhibitedPhoneNumberRegexp)) &#123;                         <span class="comment">//对number过滤</span></div><div class="line">                Log.i(TAG, <span class="string">"The phone number is prohibited explicitly by a rule."</span>);</div><div class="line">               <span class="keyword">if</span> (getActivity() != <span class="keyword">null</span>) &#123;</div><div class="line">                    DialogFragment dialogFragment = ErrorDialogFragment.newInstance(</div><div class="line">                            R.string.dialog_phone_call_prohibited_message);</div><div class="line">                    dialogFragment.show(getFragmentManager(), <span class="string">"phone_prohibited_dialog"</span>);</div><div class="line"></div><div class="line">                &#125;</div><div class="line"></div><div class="line">                clearDialpad();                                            <span class="comment">//清除数字</span></div><div class="line"></div><div class="line">            &#125; <span class="keyword">else</span> &#123;                                              <span class="comment">//如果number通过了检查</span></div><div class="line"></div><div class="line">                <span class="keyword">final</span> Intent intent = CallUtil.getCallIntent(number,                  <span class="comment">//取得一个Callintent</span></div><div class="line"></div><div class="line"></div><div class="line">                        (getActivity() <span class="keyword">instanceof</span> DialtactsActivity ?</div><div class="line">                               ((DialtactsActivity) getActivity()).getCallOrigin() : <span class="keyword">null</span>));</div><div class="line"></div><div class="line">                              DialerUtils.startActivityWithErrorToast(getActivity(), intent);   <span class="comment">//交给DialerUtils去处理</span></div><div class="line">                hideAndClearDialpad(<span class="keyword">false</span>)</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><del>如果用户点击的不是enter键，onKey方法将会返回false,交给onPressed处理</del>（<em>这里暂存疑 </em>）。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPressed</span><span class="params">(View view, <span class="keyword">boolean</span> pressed)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (DEBUG) Log.d(TAG, <span class="string">"onPressed(). view: "</span> + view + <span class="string">", pressed: "</span> + pressed);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (pressed) &#123;                        <span class="comment">//这里继续对各个按键判断</span></div><div class="line">            <span class="keyword">switch</span> (view.getId()) &#123;</div><div class="line">                <span class="keyword">case</span> R.id.one: &#123;</div><div class="line">                    keyPressed(KeyEvent.KEYCODE_1);  <span class="comment">//在keyPressed()方法中调用playTone（）方法，从而产生不同的按键声音效果</span></div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">               ... 略</div><div class="line"></div><div class="line">                <span class="keyword">case</span> R.id.zero: &#123;</div><div class="line">                    keyPressed(KeyEvent.KEYCODE_0);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">case</span> R.id.pound: &#123;</div><div class="line">                    keyPressed(KeyEvent.KEYCODE_POUND);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">case</span> R.id.star: &#123;</div><div class="line">                    keyPressed(KeyEvent.KEYCODE_STAR);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">default</span>: &#123;</div><div class="line">                    Log.wtf(TAG, <span class="string">"Unexpected onTouch(ACTION_DOWN) event from: "</span> + view);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            mPressedDialpadKeys.add(view);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            mPressedDialpadKeys.remove(view);</div><div class="line">           <span class="keyword">if</span> (mPressedDialpadKeys.isEmpty()) &#123;</div><div class="line">                stopTone();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>随后继续触发onClick方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View view)</span> </span>&#123;</div><div class="line">    <span class="keyword">switch</span> (view.getId()) &#123;</div><div class="line">        <span class="keyword">case</span> R.id.dialpad_floating_action_button:                                  <span class="comment">//拨打按钮</span></div><div class="line">            mHaptic.vibrate();</div><div class="line">          handleDialButtonPressed();                                    <span class="comment">//再次交给了handleDialButton()方法</span></div><div class="line">            <span class="keyword">break</span>;</div><div class="line"></div><div class="line">        <span class="keyword">case</span> R.id.deleteButton: &#123;                                                  <span class="comment">//del按钮</span></div><div class="line">            keyPressed(KeyEvent.KEYCODE_DEL);</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">       <span class="keyword">case</span> R.id.digits: &#123;                                             <span class="comment">//数字显示框，聚焦</span></div><div class="line"></div><div class="line">            <span class="keyword">if</span> (!isDigitsEmpty()) &#123;</div><div class="line">               mDigits.setCursorVisible(<span class="keyword">true</span>);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">case</span> R.id.dialpad_overflow: &#123;</div><div class="line">            mOverflowPopupMenu.show();</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">default</span>: &#123;</div><div class="line">           Log.wtf(TAG, <span class="string">"Unexpected onClick() event from: "</span> + view);</div><div class="line">           <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>总之，在类DialPadFragment中完成了拨号，并将带着拨号数字的intent交给了类DialerUtils。 </strong></p>
+<blockquote>
+<p>DialerUtils.startActivityWithErrorToast(getActivity(), intent);</p>
+</blockquote>
+<h3 id="DialerUtils"><a href="#DialerUtils" class="headerlink" title="DialerUtils"></a>DialerUtils</h3><p>3、进入类DialerUtils.startActivityWithErrorToast()方法，这里有多个重载：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startActivityWithErrorToast</span><span class="params">(Context context, Intent intent, <span class="keyword">int</span> msgId)</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;                                         <span class="comment">//判断Intent是否是ACTION_CALL</span></div><div class="line">            <span class="keyword">if</span> (Intent.ACTION_CALL.equals(intent.getAction())) &#123;</div><div class="line">                <span class="comment">// All dialer-initiated calls should pass the touch point to the InCallUI</span></div><div class="line">                Point touchPoint = TouchPointManager.getInstance().getPoint();</div><div class="line">               <span class="keyword">if</span> (touchPoint.x != <span class="number">0</span> || touchPoint.y != <span class="number">0</span>) &#123;</div><div class="line">                    Bundle extras = <span class="keyword">new</span> Bundle();</div><div class="line">                    extras.putParcelable(TouchPointManager.TOUCH_POINT, touchPoint);</div><div class="line">                    intent.putExtra(TelecomManager.EXTRA_OUTGOING_CALL_EXTRAS, extras);</div><div class="line">               &#125;</div><div class="line"></div><div class="line">                  <span class="keyword">final</span> TelecomManager tm = (TelecomManager)            <span class="comment">//获取TelecomManager服务</span></div><div class="line">                   context.getSystemService(Context.TELECOM_SERVICE);</div><div class="line">                  tm.placeCall(intent.getData(), intent.getExtras());</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                context.startActivity(intent);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (ActivityNotFoundException e) &#123;</div><div class="line">            Toast.makeText(context, msgId, Toast.LENGTH_SHORT).show();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="TelecomManager"><a href="#TelecomManager" class="headerlink" title="TelecomManager"></a>TelecomManager</h3><p>4、进入类TelecomManager.placeCall()方法,此时已经在framework包下，进入了framework层：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">placeCall</span><span class="params">(Uri address, Bundle extras)</span> </span>&#123;</div><div class="line">        ITelecomService service = getTelecomService();<span class="comment">//获取TelecomService服务</span></div><div class="line">        <span class="keyword">if</span> (service != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (address == <span class="keyword">null</span>) &#123;</div><div class="line">                Log.w(TAG, <span class="string">"Cannot place call to empty address."</span>);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                service.placeCall(address, extras == <span class="keyword">null</span> ? <span class="keyword">new</span> Bundle() : extras,</div><div class="line">                        mContext.getOpPackageName());<span class="comment">//交给Service去处理，进入Server端</span></div><div class="line">            &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</div><div class="line">                Log.e(TAG, <span class="string">"Error calling ITelecomService#placeCall"</span>, e);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<hr>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/10/hello-world/" rel="next" title="Hello World(搭建问题解答）">
+                <i class="fa fa-chevron-left"></i> Hello World(搭建问题解答）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/25/Java反射浅谈（一）/" rel="prev" title="Java反射浅谈（一）">
+                Java反射浅谈（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/22/Android6-0-source-code-first-anlysis/"
+           data-title="Android6.0 Telephone 源码分析（一）" data-url="http://yoursite.com/2016/07/22/Android6-0-source-code-first-anlysis/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="luoluolet" />
+          <p class="site-author-name" itemprop="name">luoluolet</p>
+          <p class="site-description motion-element" itemprop="description">相信吧，快乐的日子将会来临！</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xianbochen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3064954095/profile?topnav=1&wvr=6" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/luoluo-let" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-chain"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#DialtactsActivity"><span class="nav-number">1.</span> <span class="nav-text">DialtactsActivity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DialPadFragment"><span class="nav-number">2.</span> <span class="nav-text">DialPadFragment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DialerUtils"><span class="nav-number">3.</span> <span class="nav-text">DialerUtils</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TelecomManager"><span class="nav-number">4.</span> <span class="nav-text">TelecomManager</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luoluolet</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"luoluolet"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

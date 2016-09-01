@@ -1,0 +1,659 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="在来电的过程中，我们往往会通过对sensor（传感器）的监听来实现一些手机状态的自动切换，这些功能的实现往往通过以下几个步骤:
+
+获得SensorManager并通过SensorManager取得某一具体需要的Sensor对象，并注册监听；
+重写其onSensorChanged(SensorEvent event)方法，在该方法中需要通过event对象获得sensor的具体数值，并需要对该数值进行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="来电翻转静音与免提自动切换听筒功能的实现">
+<meta property="og:url" content="http://yoursite.com/2016/08/20/来电翻转静音与免提自动切换听筒功能的实现/index.html">
+<meta property="og:site_name" content="luoluolet">
+<meta property="og:description" content="在来电的过程中，我们往往会通过对sensor（传感器）的监听来实现一些手机状态的自动切换，这些功能的实现往往通过以下几个步骤:
+
+获得SensorManager并通过SensorManager取得某一具体需要的Sensor对象，并注册监听；
+重写其onSensorChanged(SensorEvent event)方法，在该方法中需要通过event对象获得sensor的具体数值，并需要对该数值进行">
+<meta property="og:image" content="http://www.android-doc.com/images/axis_device.png">
+<meta property="og:updated_time" content="2016-08-31T07:05:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="来电翻转静音与免提自动切换听筒功能的实现">
+<meta name="twitter:description" content="在来电的过程中，我们往往会通过对sensor（传感器）的监听来实现一些手机状态的自动切换，这些功能的实现往往通过以下几个步骤:
+
+获得SensorManager并通过SensorManager取得某一具体需要的Sensor对象，并注册监听；
+重写其onSensorChanged(SensorEvent event)方法，在该方法中需要通过event对象获得sensor的具体数值，并需要对该数值进行">
+<meta name="twitter:image" content="http://www.android-doc.com/images/axis_device.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/08/20/来电翻转静音与免提自动切换听筒功能的实现/"/>
+
+  <title> 来电翻转静音与免提自动切换听筒功能的实现 | luoluolet </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">luoluolet</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                来电翻转静音与免提自动切换听筒功能的实现
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-20T13:55:57+08:00" content="2016-08-20">
+              2016-08-20
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/20/来电翻转静音与免提自动切换听筒功能的实现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/20/来电翻转静音与免提自动切换听筒功能的实现/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在来电的过程中，我们往往会通过对sensor（传感器）的监听来实现一些手机状态的自动切换，这些功能的实现往往通过以下几个步骤:</p>
+<ol>
+<li>获得SensorManager并通过SensorManager取得某一具体需要的Sensor对象，并注册监听；</li>
+<li>重写其onSensorChanged(SensorEvent event)方法，在该方法中需要通过event对象获得sensor的具体数值，并需要对该数值进行判断，来确定是否满足我们预期进行功能或状态切换的条件，而这些条件即<strong>sensor具体数值的确定</strong>是整个功能实现的难点；</li>
+<li>在使用完后要对sensor进行解绑，因为sensor的开启将会十分耗电。</li>
+</ol>
+<h2 id="来电翻转静音"><a href="#来电翻转静音" class="headerlink" title="来电翻转静音"></a>来电翻转静音</h2><p>这段代码截取自 InCallActivity.java，这段代码实现了来电翻转静音的功能：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">SensorManagerHelper</span> <span class="keyword">implements</span> <span class="title">SensorEventListener</span> </span>&#123; <span class="comment">// 声明一个实现了SensorEventListener接口内部类</span></div><div class="line">    <span class="keyword">private</span> SensorManager sensorManager;<span class="comment">//一些变量的声明</span></div><div class="line">    <span class="keyword">private</span> Sensor sensor;</div><div class="line">    <span class="keyword">private</span> Context context;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> isUpdate = <span class="keyword">true</span>;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> sensorStatusFlag = <span class="number">1</span>;</div><div class="line">    <span class="comment">// TYPE_GRAVITY</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> upturn = <span class="keyword">false</span>; <span class="comment">// turn before</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> downturn = <span class="keyword">false</span>; <span class="comment">// turn after</span></div><div class="line">    <span class="comment">// TYPE_ACCELEROMETER</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> screenUp = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SensorManagerHelper</span><span class="params">(Context context)</span> </span>&#123;<span class="comment">//在构造方法中调用init()方法</span></div><div class="line">        <span class="keyword">super</span>();</div><div class="line">        <span class="keyword">this</span>.context = context;</div><div class="line">        init();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</div><div class="line">        Log.d(<span class="keyword">this</span>,<span class="string">"SensorManagerHelper init"</span>);</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == sensorManager) &#123;</div><div class="line">            sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);<span class="comment">//取得SensorManager对象</span></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != sensorManager &amp;&amp; <span class="keyword">null</span> == sensor) &#123;</div><div class="line">            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);<span class="comment">//优先选择ACCELEROMETERSensor（加速度传感器）</span></div><div class="line">            <span class="keyword">if</span> (<span class="keyword">null</span> == sensor) &#123;</div><div class="line">                sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);<span class="comment">//如果没有ACCELEROMETERSensor就尝试去获取GRAVITYSensor（重力传感器）</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != sensor) &#123;<span class="comment">//如果获取到了ACCELEROMETERSensor或者GRAVITYSensor 就讲标志位设为true并注册监听</span></div><div class="line">            isUpdate = <span class="keyword">true</span>;</div><div class="line">            sensorManager.registerListener(<span class="keyword">this</span>, sensor, SensorManager.SENSOR_DELAY_NORMAL);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSensorChanged</span><span class="params">(SensorEvent event)</span> </span>&#123;<span class="comment">//重写onSensorChanged(SensorEvent event)方法</span></div><div class="line">        <span class="keyword">if</span> (!isUpdate) &#123; <span class="comment">//如果在init()方法中没有获取到sensor或已经成功回调了一次change方法就直接跳出</span></div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (event.sensor.getType() == Sensor.TYPE_GRAVITY) &#123;<span class="comment">//change事件为GRAVITYSensor</span></div><div class="line">            <span class="keyword">float</span> z = event.values[<span class="number">2</span>];<span class="comment">//获得Z轴方向上的重力加速度</span></div><div class="line"></div><div class="line">            <span class="keyword">if</span> (z &gt;= <span class="number">8</span>) &#123;<span class="comment">//当Z方向的值大于8时，（g约等于9.8），便认为是正面手机朝上的状态</span></div><div class="line">                upturn = <span class="keyword">true</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (upturn &amp;&amp; (z &lt;= -<span class="number">8</span>)) &#123;<span class="comment">//反之则为认为手机翻转</span></div><div class="line">                downturn = <span class="keyword">true</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (downturn) &#123;</div><div class="line">                isUpdate = <span class="keyword">false</span>;</div><div class="line">                mute();<span class="comment">//翻转则静音，调用mute（）方法</span></div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) &#123;<span class="comment">//为ACCELEROMETERSensro的情况</span></div><div class="line">            <span class="keyword">float</span> x = event.values[<span class="number">0</span>];</div><div class="line">            <span class="keyword">float</span> y = event.values[<span class="number">1</span>];</div><div class="line">            <span class="keyword">if</span> (x &gt; -<span class="number">1</span> &amp;&amp; x &lt; <span class="number">1</span>) &#123;</div><div class="line">                sensorStatusFlag = <span class="number">0</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (sensorStatusFlag == <span class="number">0</span> &amp;&amp; (x &gt; <span class="number">8</span> || x &lt; -<span class="number">8</span> || y &gt; <span class="number">8</span> || y &lt; -<span class="number">8</span>)) &#123;<span class="comment">//这里这个判断的意思是，开始时手机为水平状态，X方向无重力加度度，当来电后，若用户翻转手机，在翻转过程中，必然会出现重力加速度全部分到X或Y轴的情况（可以拿手机自己演示一下）</span></div><div class="line">                isUpdate = <span class="keyword">false</span>;</div><div class="line">                mute();</div><div class="line">                sensorStatusFlag = <span class="number">1</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAccuracyChanged</span><span class="params">(Sensor sensor, <span class="keyword">int</span> accuracy)</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stopListen</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != sensorManager &amp;&amp; <span class="keyword">null</span> != sensor) &#123;<span class="comment">//先判断sensorManager和sensor是否为空，不空则解绑</span></div><div class="line">            sensorManager.unregisterListener(<span class="keyword">this</span>);</div><div class="line">        &#125;</div><div class="line">        upturn = <span class="keyword">false</span>;</div><div class="line">        downturn = <span class="keyword">false</span>;</div><div class="line">        screenUp = <span class="keyword">false</span>;</div><div class="line">        isUpdate = <span class="keyword">true</span>;</div><div class="line">        sensorStatusFlag = <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">mute</span><span class="params">()</span> </span>&#123;<span class="comment">//调用TelecomManager中的silenceRinger()方法，实现静音</span></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            getTelecomManager().silenceRinger();</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p> 　　　　　　　　　　　　<img src="http://www.android-doc.com/images/axis_device.png" alt=""><br>The X axis is horizontal and points to the right, the Y axis is vertical and points up and the Z axis points towards the outside of the front face of the screen. In this system, coordinates behind the screen have negative Z values.</p>
+</blockquote>
+<p><a href="http://www.android-doc.com/reference/android/hardware/SensorEvent.html#values" target="_blank" rel="external">http://www.android-doc.com/reference/android/hardware/SensorEvent.html#values</a></p>
+<p>该内部类在onStart()方法中new出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (Log.DEBUG) Log.d(TAG, <span class="string">"enter onStart()..."</span>);</div><div class="line">        <span class="keyword">super</span>.onStart();</div><div class="line">        <span class="keyword">if</span> (isRotatingMuteSupport()) &#123;<span class="comment">//判断翻转静音功能的开关</span></div><div class="line">            mSensorManagerHelper = <span class="keyword">new</span> SensorManagerHelper(getApplicationContext());</div><div class="line">        &#125;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">``` </div><div class="line">在onStop()方法中完成了解绑：</div><div class="line">``` <span class="function">java</span></div><div class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> &#123;</div><div class="line">        ...</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != mSensorManagerHelper) &#123;</div><div class="line">            mSensorManagerHelper.stopListen();</div><div class="line">        &#125;</div><div class="line">        ...</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="来电拿起接听自动切换话筒"><a href="#来电拿起接听自动切换话筒" class="headerlink" title="来电拿起接听自动切换话筒"></a>来电拿起接听自动切换话筒</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ExtraSensorManagerHelper</span> <span class="keyword">implements</span> <span class="title">SensorEventListener</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> SensorManager sensorManager;</div><div class="line">        <span class="keyword">private</span> Sensor accelerOmeterSensor;</div><div class="line">        <span class="keyword">private</span> Sensor proximitySensor;</div><div class="line">        <span class="keyword">private</span> Context context;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> isClear = <span class="keyword">false</span>;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">float</span> x = <span class="number">0</span>;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">float</span> y = <span class="number">0</span>;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">float</span> z = <span class="number">0</span>;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAudioMode</span><span class="params">(<span class="keyword">int</span> mode)</span> </span>&#123;</div><div class="line">            Log.d(<span class="string">"chenxianboExtra"</span>, <span class="string">"Sending new Audio Mode: "</span> + AudioState.audioRouteToString(mode));</div><div class="line">            TelecomAdapter.getInstance().setAudioRoute(mode);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">       ... <span class="comment">//初始化等相同部分省略，不再赘述</span></div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSensorChanged</span><span class="params">(SensorEvent event)</span> </span>&#123;</div><div class="line">            Log.d(<span class="string">"chenxianboExtra"</span>,<span class="string">"onSensorChangedEvent"</span>);</div><div class="line">            <span class="keyword">if</span> (event.sensor.getType() == Sensor.TYPE_PROXIMITY) &#123;<span class="comment">//首先判断是否贴近</span></div><div class="line">                    x = event.values[<span class="number">0</span>];</div><div class="line">                    <span class="keyword">if</span> (x == <span class="number">0</span>) &#123;</div><div class="line">                      isClear = <span class="keyword">true</span>;</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                      isClear = <span class="keyword">false</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) &#123;</div><div class="line">                    x = event.values[<span class="number">0</span>];</div><div class="line">                    y = event.values[<span class="number">1</span>];</div><div class="line">                    z = event.values[<span class="number">2</span>];</div><div class="line">                    Log.d(<span class="string">"chenxianboExtra"</span>,<span class="string">"Sensor.TYPE_ACCELEROMETER value "</span>  + x + y + z);</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (!isClear) &#123;<span class="comment">//如果未贴近耳朵则跳出该方法</span></div><div class="line">                    Log .d(<span class="string">"chenxianboExtra"</span>,<span class="string">"!isClear"</span>);</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line">            Log.d(<span class="string">"chenxianboExtra"</span>,<span class="string">"isSpeakerPhone"</span> + isSpeakerPhone());</div><div class="line">            <span class="keyword">if</span> (x &lt; <span class="number">9.0</span> &amp;&amp; y &gt; <span class="number">4.0</span> &amp;&amp; y &lt; <span class="number">8.2</span> &amp;&amp; z &gt; -<span class="number">0.8</span> &amp;&amp; isSpeakerPhone()) &#123;<span class="comment">//当用户手机贴近了耳朵，并以一定的角度持手机时且当前为免提状态，则认为符合条件，切换为听筒状态</span></div><div class="line">                    setAudioMode(AudioState.ROUTE_EARPIECE);</div><div class="line">                &#125;</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">   ... <span class="comment">//相同部分略</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如上文所述，在整个功能的实现中，难点在于对sensor数值的判断，我在写此功能时，通过不断模仿用户使用场景，并将sensor的值在log中打出，观察X、Y、Z轴的数值变换，以此来确定符合用户场景的特定sensor值。</p>
+<blockquote>
+<p>08-10 17:54:47.930 D/InCall  ( 2107): chenxianboExtra - !isClear<br>08-10 17:54:47.931 D/InCall  ( 2107): chenxianboExtra - onSensorChangedEvent<br>08-10 17:54:47.931 D/InCall  ( 2107): chenxianboExtra - onSensorChanged  =============================================<br>08-10 17:54:47.931 D/InCall  ( 2107): chenxianboExtra - event.sensor.getType() = 1<br>08-10 17:54:47.931 D/InCall  ( 2107): chenxianboExtra - onSensorChanged  0.116 , 4.396 , 8.22<br>08-10 17:54:47.931 D/InCall  ( 2107): chenxianboExtra - Sensor.TYPE_ACCELEROMETER value test0.1164.3968.22<br>08-10 17:54:47.932 D/InCall  ( 2107): chenxianboExtra - !isClear<br>08-10 17:54:47.932 D/InCall  ( 2107): chenxianboExtra - onSensorChangedEvent<br>08-10 17:54:47.932 D/InCall  ( 2107): chenxianboExtra - onSensorChanged  =============================================<br>08-10 17:54:47.932 D/SurfaceFlinger(  303): postEvent(1312, v/c=1032)<br>08-10 17:54:47.932 D/SurfaceFlinger(  303): postEvent(303, v/c=5073)<br>08-10 17:54:47.934 V/DisplayEventReceiver( 1312): call nativeScheduleVsync mReceiverPtr = 547378982528<br>08-10 17:54:47.934 D/SurfaceFlinger(  303): requestNextVsync(1312)<br>08-10 17:54:47.934 D/InCall  ( 2107): chenxianboExtra - event.sensor.getType() = 1<br>08-10 17:54:47.935 D/InCall  ( 2107): chenxianboExtra - onSensorChanged  0.078 , 4.469 , 8.449</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/14/教你快刀斩乱麻般的抓住进程和线程的区别/" rel="next" title="教你快刀斩乱麻般的抓住进程和线程的区别">
+                <i class="fa fa-chevron-left"></i> 教你快刀斩乱麻般的抓住进程和线程的区别
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/20/转-Android编译系统的理解/" rel="prev" title="[转]Android编译系统的理解">
+                [转]Android编译系统的理解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/20/来电翻转静音与免提自动切换听筒功能的实现/"
+           data-title="来电翻转静音与免提自动切换听筒功能的实现" data-url="http://yoursite.com/2016/08/20/来电翻转静音与免提自动切换听筒功能的实现/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="luoluolet" />
+          <p class="site-author-name" itemprop="name">luoluolet</p>
+          <p class="site-description motion-element" itemprop="description">相信吧，快乐的日子将会来临！</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xianbochen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/3064954095/profile?topnav=1&wvr=6" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/luoluo-let" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-chain"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#来电翻转静音"><span class="nav-number">1.</span> <span class="nav-text">来电翻转静音</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#来电拿起接听自动切换话筒"><span class="nav-number">2.</span> <span class="nav-text">来电拿起接听自动切换话筒</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">luoluolet</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"luoluolet"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
